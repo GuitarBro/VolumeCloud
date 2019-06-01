@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace Yangrc.VolumeCloud {
     [CreateAssetMenu]
@@ -141,6 +142,43 @@ namespace Yangrc.VolumeCloud {
 
             mat.SetFloat(PropertyHash.atmosphereColorSaturateDistance, atmosphereSaturateDistance);
             mat.SetColor(PropertyHash.ambientColor, ambientColor);
-        }
-    }
+		}
+
+		public void ApplyToSheet(PropertySheet sheet) {
+			MaterialPropertyBlock mat = sheet.properties;
+
+			mat.SetFloat(PropertyHash.cloudStartHeight, cloudHeightRange.x);
+			mat.SetFloat(PropertyHash.cloudEndHeight, cloudHeightRange.y);
+
+			mat.SetTexture(PropertyHash.baseTex, baseTexture);
+			mat.SetTexture(PropertyHash.detailTex, detailTexture);
+			mat.SetTexture(PropertyHash.curlNoise, curlNoise);
+
+			mat.SetFloat(PropertyHash.baseTile, baseTile);
+			mat.SetTexture(PropertyHash.heightDensity, heightDensityMap);
+			mat.SetFloat(PropertyHash.detailTile, detailTile);
+
+			mat.SetFloat(PropertyHash.detailStrength, detailStrength);
+			mat.SetFloat(PropertyHash.curlTile, curlTile);
+			mat.SetFloat(PropertyHash.curlStrength, curlStrength);
+			mat.SetFloat(PropertyHash.topOffset, topOffset);
+			mat.SetFloat(PropertyHash.cloudSize, overallSize);
+			mat.SetFloat(PropertyHash.cloudOverallDensity, overallDensity);
+			mat.SetFloat(PropertyHash.cloudTypeModifier, cloudTypeModifier);
+			mat.SetFloat(PropertyHash.cloudCoverageModifier, cloudCoverageModifier);
+
+			mat.SetVector(PropertyHash.windDirection, new Vector4(windDirection.x, windDirection.y, windSpeed, -windSpeed));
+			mat.SetTexture(PropertyHash.weatherTex, weatherTex);
+			mat.SetFloat(PropertyHash.weatherTexSize, weatherTexSize);
+			mat.SetFloat(PropertyHash.scatteringCoefficient, scatteringCoefficient * COEFFICIENT_SCALE);
+			mat.SetFloat(PropertyHash.extinctionCoefficient, extinctionCoefficient * COEFFICIENT_SCALE);
+			mat.SetFloat(PropertyHash.multiScatteringA, multiScatteringScattering);
+			mat.SetFloat(PropertyHash.multiScatteringB, multiScatteringExtinction);
+			mat.SetFloat(PropertyHash.multiScatteringC, multiScatteringEC);
+			mat.SetFloat(PropertyHash.silverSpread, silverSpread);
+
+			mat.SetFloat(PropertyHash.atmosphereColorSaturateDistance, atmosphereSaturateDistance);
+			mat.SetColor(PropertyHash.ambientColor, ambientColor);
+		}
+	}
 }

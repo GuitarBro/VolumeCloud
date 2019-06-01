@@ -6,7 +6,7 @@ using UnityEngine;
 
 public abstract class EffectBase : MonoBehaviour
 {
-    public void EnsureArray<T>(ref T[] array, int size, T initialValue = default(T))
+    public static void EnsureArray<T>(ref T[] array, int size, T initialValue = default(T))
     {
         if (array == null || array.Length != size)
         {
@@ -16,7 +16,7 @@ public abstract class EffectBase : MonoBehaviour
         }
     }
 
-    public void EnsureArray<T>(ref T[,] array, int size0, int size1, T defaultValue = default(T))
+    public static void EnsureArray<T>(ref T[,] array, int size0, int size1, T defaultValue = default(T))
     {
         if (array == null || array.Length != size0 * size1)
         {
@@ -61,7 +61,7 @@ public abstract class EffectBase : MonoBehaviour
         }
     }
 
-    public bool EnsureRenderTarget(ref RenderTexture rt, int width, int height, RenderTextureFormat format, FilterMode filterMode, TextureWrapMode wrapMode = TextureWrapMode.Clamp, bool randomWrite = false, bool useMipmap = false, int depthBits = 0, int antiAliasing = 1)
+    public static bool EnsureRenderTarget(ref RenderTexture rt, int width, int height, RenderTextureFormat format, FilterMode filterMode, TextureWrapMode wrapMode = TextureWrapMode.Clamp, bool randomWrite = false, bool useMipmap = false, int depthBits = 0, int antiAliasing = 1)
     {
         if (rt != null && (rt.width != width || rt.height != height || rt.format != format || rt.filterMode != filterMode || rt.enableRandomWrite != randomWrite || rt.wrapMode != wrapMode || rt.antiAliasing != antiAliasing || rt.useMipMap != useMipmap))
         {
