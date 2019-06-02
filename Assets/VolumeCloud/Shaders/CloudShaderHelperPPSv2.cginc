@@ -8,17 +8,18 @@
 
 
 static const float bayerOffsets[3][3] = {
-	{0, 7, 3},
-	{6, 5, 2},
-	{4, 1, 8}
+	{ 0, 7, 3 },
+{ 6, 5, 2 },
+{ 4, 1, 8 }
 };
 
 TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
-TEXTURE2D_SAMPLER2D(_HeightDensity, sampler_HeightDensity);
-TEXTURE3D_SAMPLER3D(_BaseTex, sampler_BaseTex);
-TEXTURE3D_SAMPLER3D(_DetailTex, sampler_DetailTex);
-TEXTURE2D_SAMPLER2D(_CurlNoise, sampler_CurlNoise);
-TEXTURE2D_SAMPLER2D(_WeatherTex, sampler_WeatherTex);
+
+sampler2D _HeightDensity;
+sampler3D _BaseTex;
+sampler3D _DetailTex;
+sampler2D _CurlNoise;
+sampler2D _WeatherTex;
 
 //Base shape
 float _CloudStartHeight;
@@ -120,7 +121,7 @@ float SampleDensity(float3 worldPos, int lod, bool cheap, out float wetness) {
 	//Sample the weather map.
 	half4 coverageSampleUV = half4((unwindWorldPos.xz / _WeatherTexSize), 0, 2.5);
 	coverageSampleUV.xy = (coverageSampleUV.xy + 0.5);
-	float3 weatherData = SAMPLE_TEXTURE2D(_WeatherTex, sampler_WeatherTex, coverageSampleUV);
+	float3 weatherData = tex2Dlod(_WeatherTex, coverageSampleUV);
 	weatherData *= float3(_CloudCoverageModifier, 1.0, _CloudTypeModifier);
 	float cloudCoverage = RemapClamped(weatherData.r, 0.0, 1.0, 0.3, 1.0);
 	float cloudType = weatherData.b;
@@ -134,24 +135,24 @@ float SampleDensity(float3 worldPos, int lod, bool cheap, out float wetness) {
 	//Sample base noise.
 	fixed4 tempResult;
 	worldPos = ApplyWind(worldPos);
-	tempResult = SAMPLE_TEXTURE3D(_BaseTex, sampler_BaseTex, half4(worldPos / _CloudSize * _BaseTile, lod)).rgba;
+	tempResult = tex3Dlod(_BaseTex, half4(worldPos / _CloudSize * _BaseTile, lod)).rgba;
 	float low_freq_fBm = (tempResult.g * .625) + (tempResult.b * 0.25) + (tempResult.a * 0.125);
 	float sampleResult = RemapClamped(tempResult.r, 0.0, .1, .0, 1.0);	//perlin-worley
 	sampleResult = RemapClamped(low_freq_fBm, -0.5 * sampleResult, 1.0, 0.0, 1.0);
 
 	//Sample Height-Density map.
-	float2 densityAndErodeness = SAMPLE_TEXTURE2D(_HeightDensity, sampler_HeightDensity, float4(cloudType, heightPercent, 0.0, 0.0)).rg;
+	float2 densityAndErodeness = tex2Dlod(_HeightDensity, float4(cloudType, heightPercent, 0.0, 0.0)).rg;
 
 	sampleResult *= densityAndErodeness.x;
 	//Clip the result using coverage map.
 	sampleResult = ApplyCoverageToDensity(sampleResult, cloudCoverage);
 
 	if (!cheap) {
-		float2 curl_noise = SAMPLE_TEXTURE2D(_CurlNoise, sampler_CurlNoise, float4(unwindWorldPos.xz / _CloudSize * _CurlTile, 0.0, 1.0)).rg;
+		float2 curl_noise = tex2Dlod(_CurlNoise, float4(unwindWorldPos.xz / _CloudSize * _CurlTile, 0.0, 1.0)).rg;
 		worldPos.xz += curl_noise.rg * (1.0 - heightPercent) * _CloudSize * _CurlStrength;
 
 		float3 tempResult2;
-		tempResult2 = SAMPLE_TEXTURE3D(_DetailTex, sampler_DetailTex, half4(worldPos / _CloudSize * _DetailTile, lod)).rgb;
+		tempResult2 = tex3Dlod(_DetailTex, half4(worldPos / _CloudSize * _DetailTile, lod)).rgb;
 		float detailsampleResult = (tempResult2.r * 0.625) + (tempResult2.g * 0.25) + (tempResult2.b * 0.125);
 		//Detail sample result here is worley-perlin fbm.
 
@@ -272,6 +273,7 @@ bool resolve_ray_start_end(float3 ws_origin, float3 ws_ray, out float start, out
 	}
 	return true;
 }
+
 
 struct RaymarchStatus {
 	float intensity;

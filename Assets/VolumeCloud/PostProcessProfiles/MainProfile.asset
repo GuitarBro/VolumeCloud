@@ -1375,17 +1375,17 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   cloudShader:
-    overrideState: 0
-    value: {fileID: 0}
+    overrideState: 1
+    value: {fileID: 4800000, guid: 6da1f1f3228217048b0c19829e6416ac, type: 3}
   heightPreprocessShader:
-    overrideState: 0
-    value: {fileID: 0}
+    overrideState: 1
+    value: {fileID: 7200000, guid: 40276bd53f35a694e8d4e025ca310775, type: 3}
   cloudHeightProcessShader:
-    overrideState: 0
-    value: {fileID: 0}
+    overrideState: 1
+    value: {fileID: 4800000, guid: 887ea87e06b795f4fae1e5cc8c743e40, type: 3}
   configuration:
-    overrideState: 0
-    value: {fileID: 0}
+    overrideState: 1
+    value: {fileID: 11400000, guid: a15886e93ac3e7847861da392782f13d, type: 2}
   downSample:
     overrideState: 0
     value: 1
@@ -1396,8 +1396,8 @@ MonoBehaviour:
     overrideState: 0
     value: 0
   useHierarchicalHeightMap:
-    overrideState: 0
-    value: 0
+    overrideState: 1
+    value: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
