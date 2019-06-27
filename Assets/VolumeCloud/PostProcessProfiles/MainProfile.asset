@@ -1387,11 +1387,11 @@ MonoBehaviour:
     overrideState: 1
     value: {fileID: 11400000, guid: a15886e93ac3e7847861da392782f13d, type: 2}
   downSample:
-    overrideState: 0
-    value: 1
-  quality:
-    overrideState: 0
+    overrideState: 1
     value: 0
+  quality:
+    overrideState: 1
+    value: 1
   allowCloudFrontObject:
     overrideState: 0
     value: 0

@@ -70,6 +70,7 @@ namespace Yangrc.VolumeCloud {
 
         [Header("Lighting - Atmosphere")]
         public float atmosphereSaturateDistance = 100000.0f;
+        public Color atmosphereColor = new Color(160 / 255.0f, 180 / 255.0f, 200 / 255.0f);
 
         private class PropertyHash {
             public static int cloudStartHeight = Shader.PropertyToID("_CloudStartHeight");
@@ -106,6 +107,7 @@ namespace Yangrc.VolumeCloud {
             public static int silverSpread = Shader.PropertyToID("_SilverSpread");
 
             public static int atmosphereColorSaturateDistance = Shader.PropertyToID("_AtmosphereColorSaturateDistance");
+            public static int atmosphereColor = Shader.PropertyToID("_AtmosphereColor");
             public static int ambientColor = Shader.PropertyToID("_AmbientColor");
         }
 
@@ -141,6 +143,7 @@ namespace Yangrc.VolumeCloud {
             mat.SetFloat(PropertyHash.silverSpread, silverSpread);
 
             mat.SetFloat(PropertyHash.atmosphereColorSaturateDistance, atmosphereSaturateDistance);
+            mat.SetColor(PropertyHash.atmosphereColor, atmosphereColor);
             mat.SetColor(PropertyHash.ambientColor, ambientColor);
 		}
 

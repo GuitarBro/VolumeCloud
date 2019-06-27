@@ -59,18 +59,21 @@ The default config in example should be nice enough to use. If you want do more 
 
 ### Weather map  
 The weather Tex tells the renderer how does cloud formed over sky. It's most important if you want to adjust your sky.  
+
 RGB channles are used, R channel for cloud coverage. G channel for wetness, and B for cloud type(see below).  
+
 For now there isn't an automatic way to generate a weather map, just paint it yourself, or use those in example.  
 
 ### Height-Density Map(Idea from [4])
 Height-density map describes the density of your cloud at specified height and type. X-axis for cloud type used in weather tex, Y-axis for height.  
+
 On the R channel, density is set for corresponding cloud type and height.  
+
 On the G channel, a detail value is set for corresponding cloud type and height. Higher the value, more "round" will the cloud be.  
 
 ### Shape / Shape-Detail / Shape-Curl
-The basic idea of volume cloud rendering is raymarch though 3D cloud-like noise texture. Here two textures are used, naming base texture and detail texture.  
-The cloud shape is formed from base texture, then subtracted by detail texture.  
-Also, a curl noise is used to offset detail texture sampling, to provide a turbulence-like effect.  
+The basic idea of volume cloud rendering is raymarch though 3D cloud-like noise texture. Here two textures are used, naming base texture and detail texture.  The cloud shape is formed from base texture, then subtracted by detail texture. Also, a curl noise is used to offset detail texture sampling, to provide a turbulence-like effect.  
+
 Adjust corresponding settings will affect how sampling is done.  
 
 ### Shape Modifiers
@@ -78,25 +81,33 @@ These are global modifiers for some values. Just leave them for 1.
 
 ### Lighting  
 The cloud lighting contains ambient light and directional light color contribution.  
+
 Ambient color is directly added to final result no matter what.   
+
 Scattering/Extinction coefficient are used to adjust how directional light affects cloud. Extinction describes how much cloud receives light, and scattering describes how much cloud scatters the light. Extinction value should never be greater than scattering value unless you want a non-physical effect(Or, the cloud in your game can glow).  
+
 The multi-scattering section contains parameters for simulate multi-scattering effects. The idea is from [4]. Hover your mouse over the label for more info.  
 
 ### Lighting - Silver
 This value controls how does the silver effect spread over cloud. Lower value causes silver effect more concentrated around sun and brighter.  
 
 ### Lighting - Atmosphere
-Atmosphere saturate distance indicates how far will the cloud be invisible due to atmosphere. The cloud alpha value will begin to drop in distance, and finally become transparent in the distance set.  
+These settings simulate aerial perspective effect for distant cloud. Cloud color is modified with following code: 
+```
+float atmosphericBlendFactor = exp(-depth / _AtmosphereColorSaturateDistance);
+result.rgb = lerp(_AtmosphereColor, result.rgb, saturate(atmosphericBlendFactor));
+```
 
 ### Wind  
 Wind effect simulates the cloud moving by rotating the noise texture. So the overall cloud position won't be changed.  
 
 ## Known issues
-Object edge glitch when allow cloud front is checked and downsampled, due to edge-preserving upsample is not implemented yet.
+Nothing yet. 
 
 ## TODO
 - [x] Add aerial perspective things.  
 - [x] Extend view distance above cloud.
+- [ ] Cloud shadow implementation.
 - [ ] HDRP integration?  
 - [ ] Weather map generator.  
 - [ ] Make the noise generator usable.  
@@ -107,6 +118,7 @@ Object edge glitch when allow cloud front is checked and downsampled, due to edg
 [3][TAA from playdead](https://github.com/playdeadgames/temporal)  
 [4][Physically Based Sky, Atmosphere and Cloud Rendering in Frostbite](https://media.contentapi.ea.com/content/dam/eacom/frostbite/files/s2016-pbs-frostbite-sky-clouds-new.pdf)  
 [5][Cool TAA history clip from zhihu](https://zhuanlan.zhihu.com/p/64993622)
+[6][Bilateral upsample code from SlightlyMad/VolumetricLights](https://github.com/SlightlyMad/VolumetricLights)
 
 ## Implementation Details
 If you're intersted in how volume cloud is implemented, see the references. Or if you're intersted at what improvements I made and how, refer to the IMPLEMENTATIONDETAIL.md at root folder.
@@ -119,3 +131,4 @@ If you're intersted in how volume cloud is implemented, see the references. Or i
 19/3/4 - Rewrite lighting code, using methods from [4], it should be very "physically based" now.  
 19/5/18 - Rewrite raymarch and TAA. The 4x4 pattern is obsoleted. A full-screen raymarch with much lower sample count and temporal reprojection is used now.  
 19/5/31 - Hi-Height technique implemented.  
+19/6/25 - Rewrite shape function, the "cauliflower" shape is more visible now. Fixed object edge glitch when downsample is used.
