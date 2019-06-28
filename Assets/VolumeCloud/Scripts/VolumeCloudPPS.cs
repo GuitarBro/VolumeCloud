@@ -13,6 +13,7 @@ public sealed class VolumeCloudPPS : PostProcessEffectSettings {
 	[Range(0, 2)]
 	public IntParameter downSample = new IntParameter { value = 1 };
 	public QualityParameter quality = new QualityParameter();
+	public BoolParameter useApSystem = new BoolParameter();
 	public BoolParameter allowCloudFrontObject = new BoolParameter();
 	public BoolParameter useHierarchicalHeightMap = new BoolParameter();
 }
@@ -21,6 +22,7 @@ public sealed class VolumeCloudPPSRenderer : PostProcessEffectRenderer<VolumeClo
 	private RenderTexture[] fullBuffer;
 	private int fullBufferIndex;
 	private RenderTexture undersampleBuffer;
+	private RenderTexture downsampledDepth;
 	private Matrix4x4 prevV;
 	private HaltonSequence sequence = new HaltonSequence() { radix = 3 };
 	// The index of 4x4 pixels.
@@ -52,6 +54,10 @@ public sealed class VolumeCloudPPSRenderer : PostProcessEffectRenderer<VolumeClo
 		if (heightLutTexture != null) {
 			heightLutTexture.Release();
 			heightLutTexture = null;
+		}
+		if (downsampledDepth != null) {
+			downsampledDepth.Release();
+			downsampledDepth = null;
 		}
 	}
 
@@ -141,6 +147,11 @@ public sealed class VolumeCloudPPSRenderer : PostProcessEffectRenderer<VolumeClo
 				sheet.DisableKeyword("MEDIUM_QUALITY");
 				sheet.EnableKeyword("LOW_QUALITY");
 			}
+			if (settings.useApSystem.GetValue<bool>()) {
+				sheet.EnableKeyword("USE_YANGRC_AP");
+			} else {
+				sheet.DisableKeyword("USE_YANGRC_AP");
+			}
 			if (settings.allowCloudFrontObject.GetValue<bool>()) {
 				sheet.EnableKeyword("ALLOW_CLOUD_FRONT_OBJECT");
 			} else {
@@ -151,6 +162,16 @@ public sealed class VolumeCloudPPSRenderer : PostProcessEffectRenderer<VolumeClo
 			sheet.properties.SetFloat("_RaymarchOffset", sequence.Get());
 			sheet.properties.SetVector("_TexelSize", undersampleBuffer.texelSize);
 
+			//0. Check if we need a downsampled depth texture(allow object font and downsample both checked)
+			EffectBase.EnsureRenderTarget(ref downsampledDepth, width, height, RenderTextureFormat.RFloat, FilterMode.Point);
+			if (settings.downSample.GetValue<int>() > 0) {
+				context.command.BlitFullscreenTriangle(RuntimeUtilities.blackTexture, downsampledDepth, sheet, 3);  //Downsample the texture.
+			} else {
+				context.command.BlitFullscreenTriangle(RuntimeUtilities.blackTexture, downsampledDepth, sheet, 4);  //Just copy it.
+			}
+			sheet.properties.SetTexture("_DownsampledDepth", downsampledDepth);
+
+			//1. Pass1, render the cloud tex.
 			context.command.BlitFullscreenTriangle(RuntimeUtilities.blackTexture, undersampleBuffer, sheet, 0);
 
 			//2. Pass 2, blend undersampled image with history buffer to new buffer.

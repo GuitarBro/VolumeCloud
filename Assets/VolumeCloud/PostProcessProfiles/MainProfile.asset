@@ -15,7 +15,7 @@ MonoBehaviour:
   active: 1
   enabled:
     overrideState: 1
-    value: 1
+    value: 0
   gradingMode:
     overrideState: 0
     value: 1
@@ -1326,7 +1326,7 @@ MonoBehaviour:
   active: 1
   enabled:
     overrideState: 1
-    value: 1
+    value: 0
   intensity:
     overrideState: 1
     value: 1
@@ -1388,10 +1388,13 @@ MonoBehaviour:
     value: {fileID: 11400000, guid: a15886e93ac3e7847861da392782f13d, type: 2}
   downSample:
     overrideState: 1
-    value: 0
+    value: 1
   quality:
     overrideState: 1
-    value: 1
+    value: 0
+  useApSystem:
+    overrideState: 1
+    value: 0
   allowCloudFrontObject:
     overrideState: 0
     value: 0

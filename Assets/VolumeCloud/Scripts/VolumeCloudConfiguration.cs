@@ -181,6 +181,7 @@ namespace Yangrc.VolumeCloud {
 			mat.SetFloat(PropertyHash.silverSpread, silverSpread);
 
 			mat.SetFloat(PropertyHash.atmosphereColorSaturateDistance, atmosphereSaturateDistance);
+			mat.SetColor(PropertyHash.atmosphereColor, atmosphereColor);
 			mat.SetColor(PropertyHash.ambientColor, ambientColor);
 		}
 	}
